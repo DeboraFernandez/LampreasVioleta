@@ -18,18 +18,6 @@ public class PedidoDAO {
     // SQL
     // ===============================
     //Actualizo las constantes SQL
-    private static final String INSERT_SQL =
-            "INSERT INTO pedido (id, cliente_id, fecha) VALUES (?, ?, ?)";
-
-    private static final String SELECT_BY_ID_SQL =
-            "SELECT id, cliente_id, fecha FROM lpedido WHERE id = ?";
-
-    private static final String SELECT_ALL_SQL =
-            "SELECT id, cliente_id, fecha FROM pedido ORDER BY id";
-
-
-    private static final String INSERT_SQL =
-            "INSERT INTO pedido (id, cliente_id, comercial_id, repartidor_id, fecha) VALUES (?, ?, ?, ?, ?)";
 
     private static final String SELECT_BY_ID_SQL =
             "SELECT id, cliente_id, comercial_id, repartidor_id, fecha FROM pedido WHERE id = ?";

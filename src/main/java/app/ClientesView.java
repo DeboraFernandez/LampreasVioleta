@@ -3,7 +3,6 @@ package app;
 import dao.ClienteDAO;
 import model.Cliente;
 //Añado imports de las nuevas dao
-import dao.ComercialDAO;
 import dao.RepartidorDAO;
 import model.Comercial;
 import model.Repartidor;
@@ -22,12 +21,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import dao.ClienteDAO;
-import model.Cliente;
 import model.DetalleCliente;
 import services.ClienteDetalle;
 import dao.DetalleClienteDAO;
-import model.DetalleCliente;
 
 import java.util.HashMap;
 import java.util.Map;

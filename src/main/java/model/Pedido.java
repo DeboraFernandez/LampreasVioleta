@@ -47,6 +47,6 @@ public class Pedido {
 
     @Override public String toString() {
         return "Pedido{id=%d, clienteId=%d, comercialId=%d, repartidorId=%d, fecha=%s, total=%.2f}"
-                .formatted(id, clienteId, comercialId, repartidorId fecha, getTotal());
+                .formatted(id, clienteId, comercialId, repartidorId, fecha, getTotal());
     }
 }
