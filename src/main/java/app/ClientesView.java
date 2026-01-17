@@ -2,6 +2,12 @@ package app;
 
 import dao.ClienteDAO;
 import model.Cliente;
+//Añado imports de las nuevas dao
+import dao.ComercialDAO;
+import dao.RepartidorDAO;
+import model.Comercial;
+import model.Repartidor;
+
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -45,6 +51,9 @@ public class ClientesView {
 
     private final BorderPane root = new BorderPane();
     private final ClienteDAO clienteDAO = new ClienteDAO();
+    // Nuevos DAO para Comercial y Repartidor
+    private final ComercialDAO comercialDAO   = new ComercialDAO();
+    private final RepartidorDAO repartidorDAO = new RepartidorDAO();
 
 
     private final ClienteDetalle clienteService = new ClienteDetalle();
@@ -78,6 +87,10 @@ public class ClientesView {
     private final TextField txtBuscar          = new TextField();
     private final Button    btnBuscar          = new Button("Buscar");
     private final Button    btnLimpiarBusqueda = new Button("Limpiar");
+
+    // Botones para ver comerciales y repartidores
+    private final Button btnVerComerciales   = new Button("Ver comerciales");
+    private final Button btnVerRepartidores  = new Button("Ver repartidores");
 
 
 
@@ -172,6 +185,10 @@ public class ClientesView {
         HBox botonesCrud = new HBox(10, btnNuevo, btnGuardar, btnBorrar, btnRecargar);
         botonesCrud.setPadding(new Insets(10, 0, 0, 0));
 
+        // Zona extra para comerciales y repartidores
+        HBox zonaComercialesRepartidores = new HBox(10, btnVerComerciales, btnVerRepartidores);
+        zonaComercialesRepartidores.setPadding(new Insets(10, 0, 0, 0));
+
         // Zona de búsqueda
         HBox zonaBusqueda = new HBox(10,
                 new Label("Buscar:"), txtBuscar, btnBuscar, btnLimpiarBusqueda);
@@ -205,6 +222,7 @@ public class ClientesView {
             }
         });
 
+
         btnNuevo.setOnAction(e -> limpiarFormulario());
 
         btnGuardar.setOnAction(e -> guardarCliente());
@@ -222,6 +240,9 @@ public class ClientesView {
             txtBuscar.clear();
             recargarDatos();
         });
+        btnVerComerciales.setOnAction(e -> mostrarComerciales());
+
+        btnVerRepartidores.setOnAction(e -> mostrarRepartidores());
     }
 
     /* =========================================================
@@ -437,6 +458,58 @@ public class ClientesView {
         }
         */
     }
+    // COMERCIALES Y REPARTIDORES (uso de los nuevos DAO)
+
+    private void mostrarComerciales() {
+        try {
+            List<Comercial> lista = comercialDAO.findAll();
+            if (lista.isEmpty()) {
+                mostrarInfo("Comerciales", "No hay comerciales registrados en la base de datos.");
+                return;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("Listado de comerciales:\n\n");
+            for (Comercial c : lista) {
+                sb.append("ID: ").append(c.getId())
+                        .append(" | Nombre: ").append(c.getNombre())
+                        .append(" | Zona: ").append(c.getZona())
+                        .append(" | Teléfono: ").append(c.getTelefono())
+                        .append("\n");
+            }
+
+            mostrarInfo("Comerciales", sb.toString());
+
+        } catch (SQLException e) {
+            mostrarError("Error al cargar comerciales", e);
+        }
+    }
+
+    private void mostrarRepartidores() {
+        try {
+            List<Repartidor> lista = repartidorDAO.findAll();
+            if (lista.isEmpty()) {
+                mostrarInfo("Repartidores", "No hay repartidores registrados en la base de datos.");
+                return;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("Listado de repartidores:\n\n");
+            for (Repartidor r : lista) {
+                sb.append("ID: ").append(r.getId())
+                        .append(" | Nombre: ").append(r.getNombre())
+                        .append(" | Vehículo: ").append(r.getVehiculo())
+                        .append(" | Turno: ").append(r.getTurno())
+                        .append("\n");
+            }
+
+            mostrarInfo("Repartidores", sb.toString());
+
+        } catch (SQLException e) {
+            mostrarError("Error al cargar repartidores", e);
+        }
+    }
+
 
     /* =========================================================
        DIÁLOGOS AUXILIARES

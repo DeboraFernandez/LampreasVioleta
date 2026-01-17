@@ -12,13 +12,15 @@ public class Pedido {
     private Integer id;                // PK
     private Integer clienteId;         // FK a Cliente (lado N de 1:N)
     private LocalDate fecha;
+    private Integer comercialId;
+    private Integer repartidorId;
 
     // N:M mediante filas en la tabla detalle_pedido
     private List<DetallePedido> lineas = new ArrayList<>();
 
     public Pedido() {}
-    public Pedido(Integer id, Integer clienteId, LocalDate fecha) {
-        this.id = id; this.clienteId = clienteId; this.fecha = fecha;
+    public Pedido(Integer id, Integer clienteId,Integer comercialId, Integer repartidorId, LocalDate fecha) {
+        this.id = id; this.clienteId = clienteId; this.comercialId = comercialId; this.repartidorId = repartidorId; this.fecha = fecha;
     }
 
     public Integer getId() { return id; }
@@ -26,6 +28,12 @@ public class Pedido {
 
     public Integer getClienteId() { return clienteId; }
     public void setClienteId(Integer clienteId) { this.clienteId = clienteId; }
+
+    public Integer getComercialId() { return comercialId; }
+    public void setComercialId(Integer comercialId) { this.comercialId = comercialId; }
+
+    public Integer getRepartidorId() { return repartidorId; }
+    public void setRepartidorId(Integer repartidorId) { this.repartidorId = repartidorId; }
 
     public LocalDate getFecha() { return fecha; }
     public void setFecha(LocalDate fecha) { this.fecha = fecha; }
@@ -38,7 +46,7 @@ public class Pedido {
     }
 
     @Override public String toString() {
-        return "Pedido{id=%d, clienteId=%d, fecha=%s, total=%.2f}"
-                .formatted(id, clienteId, fecha, getTotal());
+        return "Pedido{id=%d, clienteId=%d, comercialId=%d, repartidorId=%d, fecha=%s, total=%.2f}"
+                .formatted(id, clienteId, comercialId, repartidorId fecha, getTotal());
     }
 }
