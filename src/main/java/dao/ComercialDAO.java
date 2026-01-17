@@ -81,6 +81,6 @@ public class ComercialDAO {
                 rs.getInt("id"),
                 rs.getString("nombre"),
                 rs.getString("zona"),
-                rs.getString("teléfono"));
+                rs.getString("telefono"));
     }
 }

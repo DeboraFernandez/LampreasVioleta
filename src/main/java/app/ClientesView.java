@@ -1,11 +1,13 @@
 package app;
 
 import dao.ClienteDAO;
+import javafx.scene.layout.VBox;
 import model.Cliente;
 //Añado imports de las nuevas dao
 import dao.RepartidorDAO;
 import model.Comercial;
 import model.Repartidor;
+import dao.ComercialDAO;
 
 
 import javafx.collections.FXCollections;
@@ -193,7 +195,12 @@ public class ClientesView {
         BorderPane bottom = new BorderPane();
         bottom.setTop(zonaBusqueda);
         bottom.setCenter(form);
-        bottom.setBottom(botonesCrud);
+
+        // Agrupamos los dos conjuntos de botones en un VBox
+
+        VBox zonaBotones = new VBox(5, botonesCrud, zonaComercialesRepartidores);
+        bottom.setBottom(zonaBotones);
+
 
         root.setBottom(bottom);
     }
