@@ -1,6 +1,8 @@
 package app;
 
 import dao.ClienteDAO;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.VBox;
 import model.Cliente;
 //Añado imports de las nuevas dao
@@ -75,6 +77,27 @@ public class ClientesView {
     private final TextField txtTelefono  = new TextField();
     private final TextField txtNotas     = new TextField();
 
+    //Campos para formulario de Comercial
+    private final TextField txtComercialId       = new TextField();
+    private final TextField txtComercialNombre   = new TextField();
+    private final TextField txtComercialZona     = new TextField();
+    private final TextField txtComercialTelefono = new TextField();
+    private final Button btnGuardarComercial     = new Button("Guardar Comercial");
+    private final Button btnEliminarComercial    = new Button("Borrar Comercial");
+
+    //Campos para formulario de Repartidor
+    private final TextField txtRepartidorId       = new TextField();
+    private final TextField txtRepartidorNombre   = new TextField();
+    private final TextField txtRepartidorVehiculo = new TextField();
+    private final TextField txtRepartidorTurno    = new TextField();
+    private final Button btnGuardarRepartidor     = new Button("Guardar Repartidor");
+    private final Button btnEliminarRepartidor    = new Button("Borrar Repartidor");
+
+    //Tablas
+    private final TableView<Comercial> tablaComerciales = new TableView<>();
+    private final TableView<Repartidor> tablaRepartidores = new TableView<>();
+
+
     // Botones CRUD
     private final Button btnNuevo    = new Button("Nuevo");
     private final Button btnGuardar  = new Button("Guardar");
@@ -148,6 +171,33 @@ public class ClientesView {
 
         root.setCenter(tabla);
     }
+    //Para configurar las nuevas tablas
+    private void configurarTablas() throws SQLException {
+        // Comercial
+        TableColumn<Comercial, Number> colComId = new TableColumn<>("ID");
+        colComId.setCellValueFactory(c -> new SimpleIntegerProperty(c.getValue().getId()));
+        TableColumn<Comercial, String> colComNombre = new TableColumn<>("Nombre");
+        colComNombre.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNombre()));
+        TableColumn<Comercial, String> colComZona = new TableColumn<>("Zona");
+        colComZona.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getZona()));
+        TableColumn<Comercial, String> colComTel = new TableColumn<>("Teléfono");
+        colComTel.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTelefono()));
+        tablaComerciales.getColumns().addAll(colComId, colComNombre, colComZona, colComTel);
+        tablaComerciales.setItems(FXCollections.observableArrayList(comercialDAO.findAll()));
+
+        // Repartidor
+        TableColumn<Repartidor, Number> colRepId = new TableColumn<>("ID");
+        colRepId.setCellValueFactory(c -> new SimpleIntegerProperty(c.getValue().getId()));
+        TableColumn<Repartidor, String> colRepNombre = new TableColumn<>("Nombre");
+        colRepNombre.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNombre()));
+        TableColumn<Repartidor, String> colRepVeh = new TableColumn<>("Vehículo");
+        colRepVeh.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getVehiculo()));
+        TableColumn<Repartidor, String> colRepTurno = new TableColumn<>("Turno");
+        colRepTurno.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTurno()));
+        tablaRepartidores.getColumns().addAll(colRepId, colRepNombre, colRepVeh, colRepTurno);
+        tablaRepartidores.setItems(FXCollections.observableArrayList(repartidorDAO.findAll()));
+    }
+
 
     private void configurarFormulario() {
         GridPane form = new GridPane();
@@ -188,13 +238,28 @@ public class ClientesView {
         zonaComercialesRepartidores.setPadding(new Insets(10, 0, 0, 0));
 
         // Zona de búsqueda
+        //Sustituyo el BorderPane por un TabPane que incluya todas las opciones
         HBox zonaBusqueda = new HBox(10,
                 new Label("Buscar:"), txtBuscar, btnBuscar, btnLimpiarBusqueda);
         zonaBusqueda.setPadding(new Insets(10, 0, 10, 0));
+        // Crear contenido para pestaña de Comerciales
+        Parent paneCom = crearFormularioComerciales();
 
-        BorderPane bottom = new BorderPane();
-        bottom.setTop(zonaBusqueda);
-        bottom.setCenter(form);
+        // Crear contenido para pestaña de Repartidores
+        Parent paneRep = crearFormularioRepartidores();
+        BorderPane paneClientes = new BorderPane();
+        paneClientes.setTop(zonaBusqueda);
+        paneClientes.setCenter(form);
+        paneClientes.setBottom(new HBox(10, btnNuevo, btnGuardar, btnBorrar, btnRecargar));
+
+        //Añado 3 pestañas a TabPane
+        TabPane tabPane = new TabPane();
+        tabPane.getTabs().add(new Tab("Clientes", paneClientes));
+        tabPane.getTabs().add(new Tab("Comerciales", paneCom));
+        tabPane.getTabs().add(new Tab("Repartidores", paneRep));
+
+        root.setBottom(tabPane);
+
 
         // Agrupamos los dos conjuntos de botones en un VBox
 
@@ -246,6 +311,79 @@ public class ClientesView {
         btnVerComerciales.setOnAction(e -> mostrarComerciales());
 
         btnVerRepartidores.setOnAction(e -> mostrarRepartidores());
+
+        //Añado eventos para guardar y borrar Comercial y Repartidor
+
+        btnGuardarComercial.setOnAction(e -> {
+            try {
+                int id = Integer.parseInt(txtComercialId.getText().trim());
+                Comercial c = new Comercial(
+                        id,
+                        txtComercialNombre.getText().trim(),
+                        txtComercialZona.getText().trim(),
+                        txtComercialTelefono.getText().trim());
+                Comercial existente = comercialDAO.findById(id);
+                if (existente == null) {
+                    comercialDAO.insert(c);
+                } else {
+                    comercialDAO.update(c);
+                }
+                recargarComerciales();
+                txtComercialId.clear(); txtComercialNombre.clear();
+                txtComercialZona.clear(); txtComercialTelefono.clear();
+            } catch (Exception ex) {
+                mostrarError("Error al guardar comercial", ex);
+            }
+        });
+
+        btnEliminarComercial.setOnAction(e -> {
+            Comercial sel = tablaComerciales.getSelectionModel().getSelectedItem();
+            if (sel != null) {
+                try {
+                    comercialDAO.deleteById(sel.getId());
+                    recargarComerciales();
+                } catch (Exception ex) {
+                    mostrarError("Error al borrar comercial", ex);
+                }
+            }
+        });
+
+        // Repetir para Repartidor:
+        btnGuardarRepartidor.setOnAction(e -> {
+            try {
+                int id = Integer.parseInt(txtRepartidorId.getText().trim());
+                Repartidor r = new Repartidor(
+                        id,
+                        txtRepartidorNombre.getText().trim(),
+                        txtRepartidorVehiculo.getText().trim(),
+                        txtRepartidorTurno.getText().trim());
+                Repartidor existente = repartidorDAO.findById(id);
+                if (existente == null) {
+                    repartidorDAO.insert(r);
+                } else {
+                    repartidorDAO.update(r);
+                }
+                recargarRepartidores();
+                txtRepartidorId.clear(); txtRepartidorNombre.clear();
+                txtRepartidorVehiculo.clear(); txtRepartidorTurno.clear();
+            } catch (Exception ex) {
+                mostrarError("Error al guardar repartidor", ex);
+            }
+        });
+
+        btnEliminarRepartidor.setOnAction(e -> {
+            Repartidor sel = tablaRepartidores.getSelectionModel().getSelectedItem();
+            if (sel != null) {
+                try {
+                    repartidorDAO.deleteById(sel.getId());
+                    recargarRepartidores();
+                } catch (Exception ex) {
+                    mostrarError("Error al borrar repartidor", ex);
+                }
+            }
+        });
+
+
     }
 
     /* =========================================================
@@ -461,6 +599,52 @@ public class ClientesView {
         }
         */
     }
+    //Añado los nuevos métodos a la clase
+    private Parent crearFormularioComerciales() {
+        GridPane form = new GridPane();
+        form.setPadding(new Insets(10));
+        form.setHgap(10);
+        form.setVgap(10);
+        form.add(new Label("ID:"), 0, 0);
+        form.add(txtComercialId, 1, 0);
+        form.add(new Label("Nombre:"), 0, 1);
+        form.add(txtComercialNombre, 1, 1);
+        form.add(new Label("Zona:"), 0, 2);
+        form.add(txtComercialZona, 1, 2);
+        form.add(new Label("Teléfono:"), 0, 3);
+        form.add(txtComercialTelefono, 1, 3);
+
+        HBox botones = new HBox(10, btnGuardarComercial, btnEliminarComercial);
+        botones.setPadding(new Insets(10, 0, 0, 0));
+
+        VBox layout = new VBox(10, tablaComerciales, form, botones);
+        layout.setPadding(new Insets(10));
+        return layout;
+    }
+
+    private Parent crearFormularioRepartidores() {
+        GridPane form = new GridPane();
+        form.setPadding(new Insets(10));
+        form.setHgap(10);
+        form.setVgap(10);
+        form.add(new Label("ID:"), 0, 0);
+        form.add(txtRepartidorId, 1, 0);
+        form.add(new Label("Nombre:"), 0, 1);
+        form.add(txtRepartidorNombre, 1, 1);
+        form.add(new Label("Vehículo:"), 0, 2);
+        form.add(txtRepartidorVehiculo, 1, 2);
+        form.add(new Label("Turno:"), 0, 3);
+        form.add(txtRepartidorTurno, 1, 3);
+
+        HBox botones = new HBox(10, btnGuardarRepartidor, btnEliminarRepartidor);
+        botones.setPadding(new Insets(10, 0, 0, 0));
+
+        VBox layout = new VBox(10, tablaRepartidores, form, botones);
+        layout.setPadding(new Insets(10));
+        return layout;
+    }
+
+
     // COMERCIALES Y REPARTIDORES (uso de los nuevos DAO)
 
     private void mostrarComerciales() {
@@ -512,6 +696,22 @@ public class ClientesView {
             mostrarError("Error al cargar repartidores", e);
         }
     }
+    private void recargarComerciales() {
+        try {
+            tablaComerciales.setItems(FXCollections.observableArrayList(comercialDAO.findAll()));
+        } catch (SQLException e) {
+            mostrarError("Error al recargar comerciales", e);
+        }
+    }
+
+    private void recargarRepartidores() {
+        try {
+            tablaRepartidores.setItems(FXCollections.observableArrayList(repartidorDAO.findAll()));
+        } catch (SQLException e) {
+            mostrarError("Error al recargar repartidores", e);
+        }
+    }
+
 
 
     /* =========================================================

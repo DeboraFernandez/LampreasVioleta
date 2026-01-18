@@ -260,70 +260,7 @@ public class DemoRelaciones {
         }
     }
 
-        //AQUÍ CREO EL ALTA, LISTADO Y BÚSQUEDA DE COMERCIAL Y REPARTIDOR
-        // =========================================================
-        // COMERCIAL
-        // =========================================================
-    private static void listarComerciales() throws SQLException {
-            ComercialDAO comercialDAO = new ComercialDAO();
-            List<Comercial> list = comercialDAO.findAll();
-            System.out.println("COMERCIALES: " + list.size());
-            list.forEach(System.out::println);
-        }
 
-    private static void insertarComercial(Scanner sc) throws SQLException {
-            ComercialDAO comercialDAO = new ComercialDAO();
-            System.out.print("id: ");
-            int id = Integer.parseInt(sc.nextLine().trim());
-            System.out.print("nombre: ");
-            String nombre = sc.nextLine().trim();
-            System.out.print("zona: ");
-            String zona = sc.nextLine().trim();
-            System.out.print("telefono: ");
-            String telefono = sc.nextLine().trim();
-            comercialDAO.insert(new Comercial(id, nombre, zona, telefono));
-            System.out.println("Comercial insertado.");
-        }
-
-    private static void buscarComercialPorId(Scanner sc) throws SQLException {
-            ComercialDAO comercialDAO = new ComercialDAO();
-            System.out.print("id: ");
-            int id = Integer.parseInt(sc.nextLine().trim());
-            Comercial c = comercialDAO.findById(id);
-            System.out.println(c == null ? "No encontrado." : c);
-        }
-
-        // =========================================================
-        // REPARTIDOR
-        // =========================================================
-    private static void listarRepartidores() throws SQLException {
-            RepartidorDAO repartidorDAO = new RepartidorDAO();
-            List<Repartidor> list = repartidorDAO.findAll();
-            System.out.println("REPARTIDORES: " + list.size());
-            list.forEach(System.out::println);
-        }
-
-    private static void insertarRepartidor(Scanner sc) throws SQLException {
-            RepartidorDAO repartidorDAO = new RepartidorDAO();
-            System.out.print("id: ");
-            int id = Integer.parseInt(sc.nextLine().trim());
-            System.out.print("nombre: ");
-            String nombre = sc.nextLine().trim();
-            System.out.print("vehiculo: ");
-            String vehiculo = sc.nextLine().trim();
-            System.out.print("turno: ");
-            String turno = sc.nextLine().trim();
-            repartidorDAO.insert(new Repartidor(id, nombre, vehiculo, turno));
-            System.out.println("Repartidor insertado.");
-        }
-
-    private static void buscarRepartidorPorId(Scanner sc) throws SQLException {
-            RepartidorDAO repartidorDAO = new RepartidorDAO();
-            System.out.print("id: ");
-            int id = Integer.parseInt(sc.nextLine().trim());
-            Repartidor r = repartidorDAO.findById(id);
-            System.out.println(r == null ? "No encontrado." : r);
-        }
     //MODIFICO EL INSERTAR PEDIDO PARA INCLUIR A MI COMERCIAL Y REPARTIDOR, PREGUNTA CADA CAMPO EN ORDEN CORRECTO
     private static void insertarPedido(Scanner sc) throws SQLException {
         System.out.print("idPedido: ");
