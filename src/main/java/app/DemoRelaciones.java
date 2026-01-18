@@ -2,6 +2,7 @@ package app;
 
 import dao.*;
 import model.*;
+import services.JsonExporter;
 import services.JsonIO;
 
 import java.io.File;
@@ -67,10 +68,20 @@ public class DemoRelaciones {
                         // ----------------- DETALLE_PEDIDO ----------------
                         case "13" -> listarDetallesPedido();
                         case "14" -> insertarDetallePedido(sc);
+                        //----ACTUALIZO SWITCH PARA CAPTURAR LAS NUEVAS OPCIONES
+                        case "15" -> listarComerciales();
+                        case "16" -> insertarComercial(sc);
+                        case "17" -> buscarComercialPorId(sc);
+                        case "18" -> listarRepartidores();
+                        case "19" -> insertarRepartidor(sc);
+                        case "20" -> buscarRepartidorPorId(sc);
 
                         // ---------------- JSON EXPORT / IMPORT ------------
-                        case "20" -> exportarJson();
-                        case "21" -> importarJson();
+                        case "21" -> exportarJson();
+                        case "22" -> importarJson();
+                        //------------AÑADO A REPARTIDOR Y COMERCIAL---------
+                        case "23" -> exportarRepartidores();
+                        case "24" -> exportarComerciales();
 
                         case "0" -> {
                             System.out.println("FIN.");
@@ -120,10 +131,22 @@ public class DemoRelaciones {
         System.out.println("  13 - Listar detalles pedido");
         System.out.println("  14 - Insertar detalle pedido");
         System.out.println();
-        System.out.println("JSON");
-        System.out.println("  20 - Exportar BD a JSON");
-        System.out.println("  21 - Importar JSON a BD (INSERT en orden FK)");
+        System.out.println("COMERCIAL");
+        System.out.println("  15 - Listar comerciales");
+        System.out.println("  16 - Insertar comercial");
+        System.out.println("  17 - Buscar comercial por id");
         System.out.println();
+        System.out.println("REPARTIDOR");
+        System.out.println("  18 - Listar repartidores");
+        System.out.println("  19 - Insertar repartidor");
+        System.out.println("  20 - Buscar repartidor por id");
+        System.out.println();
+        System.out.println("JSON");
+        System.out.println("  21 - Exportar BD a JSON");
+        System.out.println("  22 - Importar JSON a BD (INSERT en orden FK)");
+        System.out.println();
+        System.out.println("  23 - Exportar repartidores a JSON");
+        System.out.println("  24 - Exportar comerciales a JSON");
         System.out.println("  0  - Salir");
         System.out.println("=========================================");
     }
@@ -236,13 +259,13 @@ public class DemoRelaciones {
             }
         }
     }
-
+    //MODIFICO EL INSERTAR PEDIDO PARA INCLUIR A MI COMERCIAL Y REPARTIDOR, PREGUNTA CADA CAMPO EN ORDEN CORRECTO
     private static void insertarPedido(Scanner sc) throws SQLException {
         System.out.print("idPedido: ");
         int id = Integer.parseInt(sc.nextLine().trim());
         System.out.print("clienteId (debe existir): ");
         int clienteId = Integer.parseInt(sc.nextLine().trim());
-        System.out.print("fecha (YYYY-MM-DD): ");
+        System.out.print("comercialId (debe existir): ");
         int comercialId = Integer.parseInt(sc.nextLine().trim());
         System.out.print("repartidorId (debe existir): ");
         int repartidorId = Integer.parseInt(sc.nextLine().trim());
@@ -294,6 +317,64 @@ public class DemoRelaciones {
         System.out.println("DetallePedido insertado.");
     }
 
+    //AÑADO COMERCIAL
+    private static void listarComerciales() throws SQLException {
+        ComercialDAO comercialDAO = new ComercialDAO();
+        List<Comercial> list = comercialDAO.findAll();
+        System.out.println("COMERCIALES: " + list.size());
+        list.forEach(System.out::println);
+    }
+
+    private static void insertarComercial(Scanner sc) throws SQLException {
+        ComercialDAO comercialDAO = new ComercialDAO();
+        System.out.print("id: ");
+        int id = Integer.parseInt(sc.nextLine().trim());
+        System.out.print("nombre: ");
+        String nombre = sc.nextLine().trim();
+        System.out.print("zona: ");
+        String zona = sc.nextLine().trim();
+        System.out.print("telefono: ");
+        String telefono = sc.nextLine().trim();
+        comercialDAO.insert(new Comercial(id, nombre, zona, telefono));
+        System.out.println("Comercial insertado.");
+    }
+
+    private static void buscarComercialPorId(Scanner sc) throws SQLException {
+        ComercialDAO comercialDAO = new ComercialDAO();
+        System.out.print("id: ");
+        int id = Integer.parseInt(sc.nextLine().trim());
+        Comercial c = comercialDAO.findById(id);
+        System.out.println(c == null ? "No encontrado." : c);
+    }
+    //AÑADO REPARTIDOR
+    private static void listarRepartidores() throws SQLException {
+        RepartidorDAO repartidorDAO = new RepartidorDAO();
+        List<Repartidor> list = repartidorDAO.findAll();
+        System.out.println("REPARTIDORES: " + list.size());
+        list.forEach(System.out::println);
+    }
+
+    private static void insertarRepartidor(Scanner sc) throws SQLException {
+        RepartidorDAO repartidorDAO = new RepartidorDAO();
+        System.out.print("id: ");
+        int id = Integer.parseInt(sc.nextLine().trim());
+        System.out.print("nombre: ");
+        String nombre = sc.nextLine().trim();
+        System.out.print("vehiculo: ");
+        String vehiculo = sc.nextLine().trim();
+        System.out.print("turno: ");
+        String turno = sc.nextLine().trim();
+        repartidorDAO.insert(new Repartidor(id, nombre, vehiculo, turno));
+        System.out.println("Repartidor insertado.");
+    }
+
+    private static void buscarRepartidorPorId(Scanner sc) throws SQLException {
+        RepartidorDAO repartidorDAO = new RepartidorDAO();
+        System.out.print("id: ");
+        int id = Integer.parseInt(sc.nextLine().trim());
+        Repartidor r = repartidorDAO.findById(id);
+        System.out.println(r == null ? "No encontrado." : r);
+    }
     // =========================================================
     // JSON EXPORT / IMPORT
     // =========================================================
@@ -315,6 +396,21 @@ public class DemoRelaciones {
 
         System.out.println("Exportado JSON en: " + JSON_FILE.getAbsolutePath());
     }
+    //AQUÍ AÑADO MIS EXPORT DE REPARTIDORES Y COMERCIALES
+    private static void exportarRepartidores() throws SQLException, IOException {
+        RepartidorDAO repartidorDAO = new RepartidorDAO();
+        List<Repartidor> repList = repartidorDAO.findAll();
+        JsonExporter.exportRepartidores(repList, "repartidores.json");
+        System.out.println("Exportados en repartidores.json");
+    }
+
+    private static void exportarComerciales() throws SQLException, IOException {
+        ComercialDAO comercialDAO = new ComercialDAO();
+        List<Comercial> comList = comercialDAO.findAll();
+        JsonExporter.exportComerciales(comList, "comerciales.json");
+        System.out.println("Exportados en comerciales.json");
+    }
+
 
     /**
      * Importa JSON a la BD haciendo INSERT en orden correcto por FKs:
