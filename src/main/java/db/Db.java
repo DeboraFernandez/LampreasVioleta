@@ -11,7 +11,7 @@ public final class Db {
     private static final String PORT = System.getenv().getOrDefault("PG_PORT", "5432");
     private static final String DB = System.getenv().getOrDefault("PG_DB", "LampreaDB");
     private static final String USER = System.getenv().getOrDefault("PG_USER", "postgres");
-    private static final String PASS = System.getenv().getOrDefault("PG_PASS", "adminPopo4.");
+    private static final String PASS = System.getenv().getOrDefault("PG_PASS", "Andrea1917");
 
     private static final String URL = "jdbc:postgresql://" + HOST + ":" + PORT + "/" + DB;
 

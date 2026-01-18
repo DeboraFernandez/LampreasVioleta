@@ -15,7 +15,7 @@ import java.util.Scanner;
  * Demo por consola:
  * - Permite probar rápidamente los DAO (listar, insertar, buscar por id)
  * - Exporta/importa JSON con una instantánea de todas las entidades
- *
+
  * Ideal para comprobar que:
  * - conexión JDBC funciona
  * - DAOs funcionan
@@ -243,9 +243,13 @@ public class DemoRelaciones {
         System.out.print("clienteId (debe existir): ");
         int clienteId = Integer.parseInt(sc.nextLine().trim());
         System.out.print("fecha (YYYY-MM-DD): ");
+        int comercialId = Integer.parseInt(sc.nextLine().trim());
+        System.out.print("repartidorId (debe existir): ");
+        int repartidorId = Integer.parseInt(sc.nextLine().trim());
+        System.out.print("fecha (YYYY-MM-DD): ");
         LocalDate fecha = LocalDate.parse(sc.nextLine().trim());
 
-        pedidoDAO.insert(new Pedido(id, clienteId, fecha));
+        pedidoDAO.insert(new Pedido(id, clienteId, comercialId, repartidorId, fecha));
         System.out.println("Pedido insertado.");
     }
 
@@ -319,8 +323,7 @@ public class DemoRelaciones {
      *  3) producto
      *  4) pedido
      *  5) detalle_pedido
-     *
-     * IMPORTANTE:
+        * IMPORTANTE:
      * - No borra lo existente (si ya hay IDs repetidos, fallará por PK).
      * - En clase podéis añadir luego una opción "vaciar tablas" o "upsert".
      */
