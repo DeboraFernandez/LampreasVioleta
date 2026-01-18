@@ -261,13 +261,10 @@ public class ClientesView {
         root.setBottom(tabPane);
 
 
-        // Agrupamos los dos conjuntos de botones en un VBox
-
-        VBox zonaBotones = new VBox(5, botonesCrud, zonaComercialesRepartidores);
-        bottom.setBottom(zonaBotones);
 
 
-        root.setBottom(bottom);
+
+
     }
 
     private void configurarEventos() {
